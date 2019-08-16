@@ -131,56 +131,68 @@ plotcp(decision_tree_model)
 summary(decision_tree_model)
 ```
 
-# plot the confusion matrix
-# True Postive   | False Positive
-# False Negative | False Positive
+Plot the confusion matrix
+True Postive   | False Positive
+False Negative | False Positive
+```{r confusion_matrix}
 pred = predict(decision_tree_model, type="class")
 table(pred, d_weather$RainTomorrow)
+```
 
-# TODO(student): Copy the following question(s) and add your response to your submission document:
-# If we care most about predicting when it rains (i.e. rain has the biggest impact on us),
-# which metrics related to the confusion matrix are important to consider? 
-# See: https://en.wikipedia.org/wiki/Confusion_matrix
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:  
+If we care most about predicting when it rains (i.e. rain has the biggest impact on us), which metrics related to the confusion matrix are important to consider? See: [https://en.wikipedia.org/wiki/Confusion_matrix](https://en.wikipedia.org/wiki/Confusion_matrix)
 
-# Analyze the initial decision tree model - visual techiques ####
-?prp
+#### Analyze the initial decision tree model - visual techiques
+
+```{r plot_tree}
 prp(decision_tree_model, extra = 1) # plot the decision tree
+``` 
 
-# Prune the decision tree ####
-# cross-validation error should be minimized to avoid over-fitting
+#### Prune the decision tree 
+
+cross-validation error should be minimized to avoid over-fitting
+
+```{r prune}
 decision_tree_model_pruned <- prune(decision_tree_model
                                     , cp=decision_tree_model$cptable[which.min(
                                         decision_tree_model$cptable[,"xerror"]),"CP"])
+```
 
-# Analyze the pruned decision tree model - numeric techniques ####
+Analyze the pruned decision tree model - numeric techniques
+```{r analyze_pruned_tree}
 printcp(decision_tree_model_pruned)
 plotcp(decision_tree_model_pruned)
 summary(decision_tree_model_pruned)
+```
 
-# plot the confusion matrix
-# True Postive   | False Positive
-# False Negative | False Positive
+Plot the confusion matrix
+True Postive   | False Positive
+False Negative | False Positive
+```{r confused_Pruned}
 pred = predict(decision_tree_model_pruned, type="class")
 table(pred, d_weather$RainTomorrow)
+```
 
-# TODO(student): Copy the following question(s) and add your response to your submission document:
-# Assume we care most about predicting when it rains.  Calculate the metrics related to the confusion 
-# matrix that are most important.
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:  
+Assume we care most about predicting when it rains.  Calculate the metrics related to the confusion matrix that are most important.
 
-# TODO(student): Copy the following question(s) and add your response to your submission document:
-# Is the pruned model better or worse than the unpruned model at predicting when it rains?
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:  
+Is the pruned model better or worse than the unpruned model at predicting when it rains?
 
-# Analyze the pruned decision tree model - visual techniques ####
+#### Analyze the pruned decision tree model - visual techniques
+```{r plot_pruned}
 prp(decision_tree_model_pruned, extra = 1) # plot the pruned decision tree
+```
 
-# TODO(student): Copy the following question(s) and add your response to your submission document:
-# Which nodes have been removed from the pruned decision tree?
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:  
+Which nodes have been removed from the pruned decision tree?
 
-# Build a new model using training and testing datasets  ####
-# TODO(student): Copy the following question(s) and add your response to your submission document:
-# Build a new decision tree using 70% of the observations for training the model and 30% of the 
-# observations used for testing.  Compare the performance of this new model on the training set and
-# on the testing set.  Submit the submit code and the performance numbers for the training and testing
-# sets.
+Build a new model using training and testing datasets
+
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:
+
+* Build a new decision tree using 70% of the observations for training the model and 30% of the observations used for testing.  
+* Compare the performance of this new model on the training set and on the testing set.  
+* Submit the submit code and the performance numbers for the training and testing sets.
 
 
