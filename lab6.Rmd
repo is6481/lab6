@@ -1,0 +1,186 @@
+---
+title: "IS6481 | Lab 6 -- Supervised Learning"
+output: 
+  html_document: 
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(width = 120)
+library(ggplot2)
+library(fpc)
+library(tidyverse)
+library(reshape2)
+# library(hrbrthemes)
+library(ggrepel)
+library(gridExtra)
+library(rpart)
+library(rpart.plot)
+
+mm <- src_mysql(
+  host='is6481-mysql.cffidl3kiu88.us-east-1.rds.amazonaws.com',
+  port=3306,
+  user='root',
+  password='test1234',
+  dbname='supervised_learning'
+)
+```
+
+### References:
+1. Supervised Learning, https://en.wikipedia.org/wiki/Supervised_learning, accessed 2015/10/07
+
+### About supervised data mining
+The task of inferring a function from labeled training data. The training data consist of a set of training examples. In supervised learning, each example is a pair consisting of an input object (typically a vector) and a desired output value (also called the supervisory signal). A supervised learning algorithm analyzes the training data and produces an inferred function, which can be used for mapping new examples. An optimal scenario will allow for the algorithm to correctly determine the class labels for unseen instances. This requires the learning algorithm to generalize from the training data to unseen situations in a "reasonable" way. 
+
+### About the data
+Weather observations from a number of locations around Australia, obtained from the Australian Commonwealth Bureau of Meteorology and processed to create a sample dataset for illustrating data mining using R and Rattle.
+
+The data has been processed to provide a target variable RainTomorrow (whether there is rain on the following day - No/Yes) and a risk variable RISK_MM (how much rain). Various transformations are performed on the data.
+
+
+### Analysis
+Load the dataset(s)
+```{r data_acquisition}
+d_weather <- tbl(mm,'weather') %>% collect()
+```
+
+#### Explore the data - summary stats
+```{r summary}
+names(d_weather) # examine the names of the attributes
+d_weather <- d_weather %>% select(-RISK_MM) # remove attributes that are not needed
+names(d_weather) # note that RISK_MM has been removed
+
+nrow(d_weather) # examine the number of observations
+summary(d_weather) # examine the summary statistics
+```
+
+Remove attributes that aren't going to be helpful based on initial exploration (e.g. there is only a single location so remove this attribute)
+```{r remove_vars}
+d_weather <- d_weather %>% select(-Location)
+names(d_weather) # note that Location has been removed
+
+summary(d_weather) # looking better but still some work to do
+```
+
+Convert data to the appropriate data type for each variable (e.g. Date is a character so convert it to a date)
+```{r change_var_type}
+class(d_weather$Date)
+d_weather$Date <- as.Date(d_weather$Date)
+class(d_weather$Date)
+summary(d_weather$Date)
+summary(d_weather) # looking good, now examine NA's
+``` 
+
+We notice also that there are several variables that came in as character for some reason. We can fix them all at once with the following code.
+```{r fix_types}
+d_weather <- d_weather %>% mutate_at(vars(MinTemp:Sunshine,WindGustSpeed,WindSpeed9am,Humidity3pm:Pressure3pm,Temp9am,Temp3pm),as.numeric)
+```
+
+Note that there are 38 observations with one or more NA values. In R, NA denotes a missing value (considered different than NULL). NA means that there is no valid value for that cell of data. Most algorithms will throw out the entire row of data if one NA exists in that row. We need to handle these values in some way.
+
+```{r NA_stats}
+nrow(d_weather) - nrow(d_weather[complete.cases(d_weather), ]) # there are 38 observations with one or more NA values
+1 - nrow(d_weather[complete.cases(d_weather), ]) / nrow(d_weather) # 10.4% of observations have one or more NA values
+d_weather[!complete.cases(d_weather), ] # examine the observations with missing data
+```
+
+All of the NA's are in one of: WindGustDir, WindDir9am, WindDir3pm; most are in WindDir9am, we should ask why this might be the case!!!
+
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:
+
+* List two different approaches for dealing with attributes that have missing (i.e. NA) values.
+
+#### Explore the data - visually
+```{r explore_viz}
+ggplot(d_weather, aes(x=WindGustDir)) + geom_bar() + coord_flip()
+ggplot(d_weather, aes(x=as.numeric(MinTemp))) + geom_density()
+
+```
+
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:
+
+* Plot all of the variables execept for "Date". Sumbit the code used.
+
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:
+
+If it was a requirement that all explanatory attributes were numeric, how would you handle:
+1. Date
+2. WindGustDir
+3. WindDir9am
+4. WindDir3pm
+5. RainToday
+
+### Build a predictive model
+
+Build predictive model with rpart algorithm ####
+```{r pred_model}
+decision_tree_model <- rpart(RainTomorrow ~
+                                MinTemp
+                              + MaxTemp
+                              + Rainfall
+                              + Evaporation
+                              + Sunshine
+                              + WindGustDir
+                              + WindGustSpeed
+                                , data=d_weather)
+
+# Analyze the initial decision tree model - numeric techniques ####
+printcp(decision_tree_model)
+plotcp(decision_tree_model)
+summary(decision_tree_model)
+```
+
+# plot the confusion matrix
+# True Postive   | False Positive
+# False Negative | False Positive
+pred = predict(decision_tree_model, type="class")
+table(pred, d_weather$RainTomorrow)
+
+# TODO(student): Copy the following question(s) and add your response to your submission document:
+# If we care most about predicting when it rains (i.e. rain has the biggest impact on us),
+# which metrics related to the confusion matrix are important to consider? 
+# See: https://en.wikipedia.org/wiki/Confusion_matrix
+
+# Analyze the initial decision tree model - visual techiques ####
+?prp
+prp(decision_tree_model, extra = 1) # plot the decision tree
+
+# Prune the decision tree ####
+# cross-validation error should be minimized to avoid over-fitting
+decision_tree_model_pruned <- prune(decision_tree_model
+                                    , cp=decision_tree_model$cptable[which.min(
+                                        decision_tree_model$cptable[,"xerror"]),"CP"])
+
+# Analyze the pruned decision tree model - numeric techniques ####
+printcp(decision_tree_model_pruned)
+plotcp(decision_tree_model_pruned)
+summary(decision_tree_model_pruned)
+
+# plot the confusion matrix
+# True Postive   | False Positive
+# False Negative | False Positive
+pred = predict(decision_tree_model_pruned, type="class")
+table(pred, d_weather$RainTomorrow)
+
+# TODO(student): Copy the following question(s) and add your response to your submission document:
+# Assume we care most about predicting when it rains.  Calculate the metrics related to the confusion 
+# matrix that are most important.
+
+# TODO(student): Copy the following question(s) and add your response to your submission document:
+# Is the pruned model better or worse than the unpruned model at predicting when it rains?
+
+# Analyze the pruned decision tree model - visual techniques ####
+prp(decision_tree_model_pruned, extra = 1) # plot the pruned decision tree
+
+# TODO(student): Copy the following question(s) and add your response to your submission document:
+# Which nodes have been removed from the pruned decision tree?
+
+# Build a new model using training and testing datasets  ####
+# TODO(student): Copy the following question(s) and add your response to your submission document:
+# Build a new decision tree using 70% of the observations for training the model and 30% of the 
+# observations used for testing.  Compare the performance of this new model on the training set and
+# on the testing set.  Submit the submit code and the performance numbers for the training and testing
+# sets.
+
+
