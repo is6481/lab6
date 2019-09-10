@@ -1,0 +1,79 @@
+---
+title: "IS6481 | Lab 6 -- Supervised Learning Responses"
+output: 
+  html_document: 
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(width = 120)
+library(ggplot2)
+library(fpc)
+library(tidyverse)
+library(reshape2)
+# library(hrbrthemes)
+library(ggrepel)
+
+mm <- src_mysql(
+  host='is6481-mysql.cffidl3kiu88.us-east-1.rds.amazonaws.com',
+  port=3306,
+  user='root',
+  password='test1234',
+  dbname='supervised_learning'
+)
+```
+
+```{r data_acquisition,echo=FALSE}
+d_weather <- tbl(mm,'weather') %>% collect()
+```
+
+```{r data_cleaning,echo=FALSE}
+d_weather_remove <- d_weather %>% select(-Location)
+d_weather_date <- d_weather_remove %>% mutate(Date=as.Date(Date,format='%m/%d/%y'))
+```
+
+
+## Data cleaning
+
+Answer the following question.
+
+* *List two different approaches for dealing with attributes that have missing (i.e. NA) values.*
+
+If it was a requirement that all explanatory attributes were numeric, how might you handle:
+
+1. *Date*
+2. *WindGustDir*
+
+
+## Data Exploration
+Answer the following questions regarding the following two charts seen in the lab.
+```{r explore_viz,echo=FALSE}
+ggplot(d_weather, aes(x=WindGustDir)) + geom_bar() + coord_flip()
+ggplot(d_weather, aes(x=as.numeric(MinTemp))) + geom_density()
+
+```
+
+* *Explain each of the plots and what they could mean*
+* *What do these plots tell us about how accurate the model might be?*
+
+## Model Training and Accuracy
+
+Answer the following regarding model accuracy.
+
+* *If we care most about predicting when it rains (i.e. rain has the biggest impact on us), which metrics related to the confusion matrix are important to consider? Meaning, do we care more or less about the overall prediction accuracy and is there a subset of the prediction accuracy we care more about? See: [https://en.wikipedia.org/wiki/Confusion_matrix](https://en.wikipedia.org/wiki/Confusion_matrix)*
+* *Assume we care most about predicting when it rains.  Calculate the metrics related to the confusion matrix that are most important.*
+
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:  
+Is the pruned model better or worse than the unpruned model at predicting when it rains?
+
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:  
+Which nodes have been removed from the pruned decision tree?
+
+Build a new model using training and testing datasets
+
+**TODO(student)**: Copy the following question(s) and add your response to your submission document:
+
+* Build a new decision tree using 70% of the observations for training the model and 30% of the observations used for testing.  
+* Compare the performance of this new model on the training set and on the testing set.  
+* Submit the submit code and the performance numbers for the training and testing sets.
