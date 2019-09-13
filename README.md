@@ -323,5 +323,5 @@ To-do
 Log in to R Studio Cloud and click on Lab 5 in the workspace for this
 course. This will be setup as an assignment which will create a
 personalized version of the assignment. The environment is already setup
-to complete the exercises. Open the file called “lab5\_turnin.Rmd” and
+to complete the exercises. Open the file called “lab6\_turnin.Rmd” and
 follow the instructions by editing that file.
