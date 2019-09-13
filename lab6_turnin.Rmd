@@ -71,8 +71,12 @@ Answer the following regarding model accuracy.
 
 ## Prediction
 
-*Based on the following chart, what does the model predict if Sunshine = 7.3 and MinTemp = 15?*
+Answer the following regarding the chart below.
 
-```{r plot_tree}
+* *What does the model predict if Sunshine = 7.3 and MinTemp = 15?*
+* *What does the model predict if Sunshine = 8, WindGust = E?*
+
+
+```{r plot_tree,echo=FALSE}
 prp(decision_tree_model, extra = 1) 
 ``` 
