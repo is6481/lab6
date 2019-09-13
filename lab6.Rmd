@@ -85,21 +85,10 @@ d_weather_date <- d_weather_remove %>% mutate(Date=as.Date(Date,format='%m/%d/%y
 summary(d_weather_date)
 ``` 
 
-Note that there are 38 observations with one or more NA values. In R, NA denotes a missing value (considered different than NULL). NA means that there is no valid value for that cell of data. Most algorithms will throw out the entire row of data if one NA exists in that row. We need to handle these values in some way. Note also that the summary function does not print missing data stats for character data.
-
-```{r NA_stats}
-nrow(d_weather_date) - nrow(d_weather_date[complete.cases(d_weather_date), ]) # there are 38 observations with one or more NA values
-1 - nrow(d_weather_date[complete.cases(d_weather_date), ]) / nrow(d_weather_date) # 10.4% of observations have one or more NA values
-d_weather_date[!complete.cases(d_weather_date), ] # examine the observations with missing data
-```
-
-All of the NA's are in one of: WindGustDir, WindDir9am, WindDir3pm; most are in WindDir9am, we should ask why this might be the case!!!
-
 Next we might want to create a few data visualizations to help us understand the data better. Below we see a bar chart looking at the different values of the Wind Gust Direction and a density plot of the minimum temperature.
 ```{r explore_viz}
 ggplot(d_weather, aes(x=WindGustDir)) + geom_bar() + coord_flip()
 ggplot(d_weather, aes(x=as.numeric(MinTemp))) + geom_density()
-
 ```
 
 
@@ -115,7 +104,7 @@ The following code creates a decision tree model predicting the variable "RainTo
 decision_tree_model <- rpart(RainTomorrow ~ MinTemp + MaxTemp + Rainfall + Evaporation + Sunshine + WindGustDir + WindGustSpeed,data=d_weather_date)
 ```
 
-Often the best way to test if the model is functioning is to create what is called a Confusion Matrix. The following shows that we got 289 of the actual "No" rain days rignt (in that we also predicted a No). Likewise we got 41 "Yesses" right. This means that the model correctly classified `r scales::percent((289 + 41) / (289 + 25 + 11 + 41))` right.
+Often the best way to test if the model is functioning is to create what is called a Confusion Matrix. The following shows that we got 289 of the actual "No" rain days rignt (in that we also predicted a No). Likewise we got 41 "Yesses" right. This means that the model correctly classified `r scales::percent((289 + 41) / (289 + 25 + 11 + 41))`.
 ```{r confusion_matrix}
 d_weather_date$pred <- predict(decision_tree_model, type="class")
 confusion_matrix <- d_weather_date %>% count(RainTomorrow,pred) %>% dcast(pred ~ RainTomorrow,value.var='n')
@@ -128,39 +117,8 @@ confusion_matrix %>% knitr::kable('html',col.names=c('Prediction','Actual: No','
 Depending on the type of decision tree model used, you can actually plot the tree and inspect the details. The following is a plot of the tree we have created.
 
 ```{r plot_tree}
-prp(decision_tree_model, extra = 1) # plot the decision tree
+prp(decision_tree_model, extra = 1) 
 ``` 
 
-#### Prune the decision tree 
-
-cross-validation error should be minimized to avoid over-fitting
-
-```{r prune}
-decision_tree_model_pruned <- prune(decision_tree_model
-                                    , cp=decision_tree_model$cptable[which.min(
-                                        decision_tree_model$cptable[,"xerror"]),"CP"])
-```
-
-Analyze the pruned decision tree model - numeric techniques
-```{r analyze_pruned_tree}
-printcp(decision_tree_model_pruned)
-plotcp(decision_tree_model_pruned)
-summary(decision_tree_model_pruned)
-```
-
-Plot the confusion matrix
-True Postive   | False Positive
-False Negative | False Positive
-```{r confused_Pruned}
-pred = predict(decision_tree_model_pruned, type="class")
-table(pred, d_weather$RainTomorrow)
-```
-
-
-#### Analyze the pruned decision tree model - visual techniques
-```{r plot_pruned}
-prp(decision_tree_model_pruned, extra = 1) # plot the pruned decision tree
-```
-
-
-
+# To-do
+Log in to R Studio Cloud and click on Lab 5 in the workspace for this course. This will be setup as an assignment which will create a personalized version of the assignment. The environment is already setup to complete the exercises. Open the file called "lab5_turnin.Rmd" and follow the instructions by editing that file.
