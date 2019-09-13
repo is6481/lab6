@@ -121,4 +121,4 @@ prp(decision_tree_model, extra = 1)
 ``` 
 
 # To-do
-Log in to R Studio Cloud and click on Lab 5 in the workspace for this course. This will be setup as an assignment which will create a personalized version of the assignment. The environment is already setup to complete the exercises. Open the file called "lab6_turnin.Rmd" and follow the instructions by editing that file.
+Log in to R Studio Cloud and click on Lab 6 in the workspace for this course. This will be setup as an assignment which will create a personalized version of the assignment. The environment is already setup to complete the exercises. Open the file called "lab6_turnin.Rmd" and follow the instructions by editing that file.
