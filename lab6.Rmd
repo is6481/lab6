@@ -19,9 +19,9 @@ library(rpart)
 library(rpart.plot)
 
 mm <- src_mysql(
-  host='is6481-mysql.cffidl3kiu88.us-east-1.rds.amazonaws.com',
+  host='is6481-fall2019.cseaimmgk5zc.us-east-1.rds.amazonaws.com',
   port=3306,
-  user='root',
+  user='admin',
   password='test1234',
   dbname='supervised_learning'
 )
