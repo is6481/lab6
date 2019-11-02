@@ -313,7 +313,7 @@ Depending on the type of decision tree model used, you can actually plot
 the tree and inspect the details. The following is a plot of the tree we
 have created.
 
-    prp(decision_tree_model, extra = 1) 
+    prp(decision_tree_model, extra = 2) 
 
 ![](README_files/figure-markdown_strict/plot_tree-1.png)
 
