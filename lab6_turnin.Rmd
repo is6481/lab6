@@ -11,13 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(fpc)
 library(tidyverse)
-library(reshape2)
+# library(reshape2)
 library(rpart)
 library(rpart.plot)
 
 
 mm <- src_mysql(
-  host='is6481-fall2019.cseaimmgk5zc.us-east-1.rds.amazonaws.com',
+  host='is6481-dvdrental.c34wx99dkjzs.us-east-1.rds.amazonaws.com',
   port=3306,
   user='admin',
   password='test1234',
@@ -26,7 +26,7 @@ mm <- src_mysql(
 ```
 
 ```{r data_acquisition,echo=FALSE}
-d_weather <- tbl(mm,'weather') %>% collect()
+d_weather <- tbl(mm,'weather') %>% collect() %>% mutate_at(vars(MinTemp:Sunshine,WindGustSpeed,WindSpeed9am,Pressure9am:Temp3pm,RISK_MM),as.numeric)
 ```
 
 ```{r data_cleaning,echo=FALSE}

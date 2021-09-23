@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(fpc)
 library(tidyverse)
-library(reshape2)
+# library(reshape2)
 # library(hrbrthemes)
 library(ggrepel)
 library(gridExtra)
@@ -19,7 +19,7 @@ library(rpart)
 library(rpart.plot)
 
 mm <- src_mysql(
-  host='is6481-fall2019.cseaimmgk5zc.us-east-1.rds.amazonaws.com',
+  host='is6481-dvdrental.c34wx99dkjzs.us-east-1.rds.amazonaws.com',
   port=3306,
   user='admin',
   password='test1234',
@@ -64,7 +64,7 @@ In our case, item #1 is done. We want to predict whether there will be rain tomo
 ### Data Exploration and Data Cleaning
 First, we need to load data set. In this case, we can download it easily from the course's database.
 ```{r data_acquisition}
-d_weather <- tbl(mm,'weather') %>% collect()
+d_weather <- tbl(mm,'weather') %>% collect() %>% mutate_at(vars(MinTemp:Sunshine,WindGustSpeed,WindSpeed9am,Pressure9am:Temp3pm,RISK_MM),as.numeric)
 ```
 
 Next we look at summaries of each of the variables. Note that most variables in the database are numeric but some are character data. For example, WindGustDir (or Wind Gust Direction) is a character variable telling us which direction the wind is blowing. Different models handle character data in different ways. We'll leave that discussion for another course.
@@ -107,7 +107,7 @@ decision_tree_model <- rpart(RainTomorrow ~ MinTemp + MaxTemp + Rainfall + Evapo
 Often the best way to test if the model is functioning is to create what is called a Confusion Matrix. The following shows that we got 289 of the actual "No" rain days rignt (in that we also predicted a No). Likewise we got 41 "Yesses" right. This means that the model correctly classified `r scales::percent((289 + 41) / (289 + 25 + 11 + 41))`.
 ```{r confusion_matrix}
 d_weather_date$pred <- predict(decision_tree_model, type="class")
-confusion_matrix <- d_weather_date %>% count(RainTomorrow,pred) %>% dcast(pred ~ RainTomorrow,value.var='n')
+confusion_matrix <- d_weather_date %>% count(RainTomorrow,pred) %>% pivot_wider(names_from=RainTomorrow,values_from=n)
 confusion_matrix %>% knitr::kable('html',col.names=c('Prediction','Actual: No','Actual: Yes'))
 ```
 

@@ -1,8 +1,8 @@
 ### References:
 
 1.  Supervised Learning,
-    <a href="https://en.wikipedia.org/wiki/Supervised_learning" class="uri">https://en.wikipedia.org/wiki/Supervised_learning</a>,
-    accessed 2015/10/07
+    <https://en.wikipedia.org/wiki/Supervised_learning>, accessed
+    2015/10/07
 
 ### About Supervised Learning
 
@@ -83,7 +83,13 @@ through the rest of the steps here.
 First, we need to load data set. In this case, we can download it easily
 from the course’s database.
 
-    d_weather <- tbl(mm,'weather') %>% collect()
+    d_weather <- tbl(mm,'weather') %>% collect() %>% mutate_at(vars(MinTemp:Sunshine,WindGustSpeed,WindSpeed9am,Pressure9am:Temp3pm,RISK_MM),as.numeric)
+
+    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
+
+    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
+
+    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
 
 Next we look at summaries of each of the variables. Note that most
 variables in the database are numeric but some are character data. For
@@ -94,46 +100,22 @@ another course.
 
     summary(d_weather) # examine the summary statistics
 
-    ##      Date             Location            MinTemp          MaxTemp     
-    ##  Length:366         Length:366         Min.   :-5.300   Min.   : 7.60  
-    ##  Class :character   Class :character   1st Qu.: 2.300   1st Qu.:15.03  
-    ##  Mode  :character   Mode  :character   Median : 7.450   Median :19.65  
-    ##                                        Mean   : 7.266   Mean   :20.55  
-    ##                                        3rd Qu.:12.500   3rd Qu.:25.50  
-    ##                                        Max.   :20.900   Max.   :35.80  
-    ##                                                                        
-    ##     Rainfall       Evaporation        Sunshine      WindGustDir       
-    ##  Min.   : 0.000   Min.   : 0.200   Min.   : 0.000   Length:366        
-    ##  1st Qu.: 0.000   1st Qu.: 2.200   1st Qu.: 5.950   Class :character  
-    ##  Median : 0.000   Median : 4.200   Median : 8.600   Mode  :character  
-    ##  Mean   : 1.428   Mean   : 4.522   Mean   : 7.909                     
-    ##  3rd Qu.: 0.200   3rd Qu.: 6.400   3rd Qu.:10.500                     
-    ##  Max.   :39.800   Max.   :13.800   Max.   :13.600                     
-    ##                                    NA's   :3                          
-    ##  WindGustSpeed    WindDir9am         WindDir3pm         WindSpeed9am   
-    ##  Min.   :13.00   Length:366         Length:366         Min.   : 0.000  
-    ##  1st Qu.:31.00   Class :character   Class :character   1st Qu.: 6.000  
-    ##  Median :39.00   Mode  :character   Mode  :character   Median : 7.000  
-    ##  Mean   :39.84                                         Mean   : 9.652  
-    ##  3rd Qu.:46.00                                         3rd Qu.:13.000  
-    ##  Max.   :98.00                                         Max.   :41.000  
-    ##  NA's   :2                                             NA's   :7       
-    ##   WindSpeed3pm    Humidity9am     Humidity3pm     Pressure9am    
-    ##  Min.   : 0.00   Min.   :36.00   Min.   :13.00   Min.   : 996.5  
-    ##  1st Qu.:11.00   1st Qu.:64.00   1st Qu.:32.25   1st Qu.:1015.4  
-    ##  Median :17.00   Median :72.00   Median :43.00   Median :1020.1  
-    ##  Mean   :17.99   Mean   :72.04   Mean   :44.52   Mean   :1019.7  
-    ##  3rd Qu.:24.00   3rd Qu.:81.00   3rd Qu.:55.00   3rd Qu.:1024.5  
-    ##  Max.   :52.00   Max.   :99.00   Max.   :96.00   Max.   :1035.7  
-    ##                                                                  
-    ##   Pressure3pm        Cloud9am        Cloud3pm        Temp9am      
-    ##  Min.   : 996.8   Min.   :0.000   Min.   :0.000   Min.   : 0.100  
-    ##  1st Qu.:1012.8   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 7.625  
-    ##  Median :1017.4   Median :3.500   Median :4.000   Median :12.550  
-    ##  Mean   :1016.8   Mean   :3.891   Mean   :4.025   Mean   :12.358  
-    ##  3rd Qu.:1021.5   3rd Qu.:7.000   3rd Qu.:7.000   3rd Qu.:17.000  
-    ##  Max.   :1033.2   Max.   :8.000   Max.   :8.000   Max.   :24.700  
-    ##                                                                   
+    ##      Date             Location            MinTemp          MaxTemp         Rainfall       Evaporation        Sunshine      WindGustDir        WindGustSpeed    WindDir9am       
+    ##  Length:366         Length:366         Min.   :-5.300   Min.   : 7.60   Min.   : 0.000   Min.   : 0.200   Min.   : 0.000   Length:366         Min.   :13.00   Length:366        
+    ##  Class :character   Class :character   1st Qu.: 2.300   1st Qu.:15.03   1st Qu.: 0.000   1st Qu.: 2.200   1st Qu.: 5.950   Class :character   1st Qu.:31.00   Class :character  
+    ##  Mode  :character   Mode  :character   Median : 7.450   Median :19.65   Median : 0.000   Median : 4.200   Median : 8.600   Mode  :character   Median :39.00   Mode  :character  
+    ##                                        Mean   : 7.266   Mean   :20.55   Mean   : 1.428   Mean   : 4.522   Mean   : 7.909                      Mean   :39.84                     
+    ##                                        3rd Qu.:12.500   3rd Qu.:25.50   3rd Qu.: 0.200   3rd Qu.: 6.400   3rd Qu.:10.500                      3rd Qu.:46.00                     
+    ##                                        Max.   :20.900   Max.   :35.80   Max.   :39.800   Max.   :13.800   Max.   :13.600                      Max.   :98.00                     
+    ##                                                                                                           NA's   :3                           NA's   :2                         
+    ##   WindDir3pm         WindSpeed9am     WindSpeed3pm    Humidity9am     Humidity3pm     Pressure9am      Pressure3pm        Cloud9am        Cloud3pm        Temp9am      
+    ##  Length:366         Min.   : 0.000   Min.   : 0.00   Min.   :36.00   Min.   :13.00   Min.   : 996.5   Min.   : 996.8   Min.   :0.000   Min.   :0.000   Min.   : 0.100  
+    ##  Class :character   1st Qu.: 6.000   1st Qu.:11.00   1st Qu.:64.00   1st Qu.:32.25   1st Qu.:1015.4   1st Qu.:1012.8   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 7.625  
+    ##  Mode  :character   Median : 7.000   Median :17.00   Median :72.00   Median :43.00   Median :1020.1   Median :1017.4   Median :3.500   Median :4.000   Median :12.550  
+    ##                     Mean   : 9.652   Mean   :17.99   Mean   :72.04   Mean   :44.52   Mean   :1019.7   Mean   :1016.8   Mean   :3.891   Mean   :4.025   Mean   :12.358  
+    ##                     3rd Qu.:13.000   3rd Qu.:24.00   3rd Qu.:81.00   3rd Qu.:55.00   3rd Qu.:1024.5   3rd Qu.:1021.5   3rd Qu.:7.000   3rd Qu.:7.000   3rd Qu.:17.000  
+    ##                     Max.   :41.000   Max.   :52.00   Max.   :99.00   Max.   :96.00   Max.   :1035.7   Max.   :1033.2   Max.   :8.000   Max.   :8.000   Max.   :24.700  
+    ##                     NA's   :7                                                                                                                                          
     ##     Temp3pm       RainToday            RISK_MM       RainTomorrow      
     ##  Min.   : 5.10   Length:366         Min.   : 0.000   Length:366        
     ##  1st Qu.:14.15   Class :character   1st Qu.: 0.000   Class :character  
@@ -150,11 +132,8 @@ attribute)
     d_weather_remove <- d_weather %>% select(-Location)
     names(d_weather_remove) # note that Location has been removed
 
-    ##  [1] "Date"          "MinTemp"       "MaxTemp"       "Rainfall"     
-    ##  [5] "Evaporation"   "Sunshine"      "WindGustDir"   "WindGustSpeed"
-    ##  [9] "WindDir9am"    "WindDir3pm"    "WindSpeed9am"  "WindSpeed3pm" 
-    ## [13] "Humidity9am"   "Humidity3pm"   "Pressure9am"   "Pressure3pm"  
-    ## [17] "Cloud9am"      "Cloud3pm"      "Temp9am"       "Temp3pm"      
+    ##  [1] "Date"          "MinTemp"       "MaxTemp"       "Rainfall"      "Evaporation"   "Sunshine"      "WindGustDir"   "WindGustSpeed" "WindDir9am"    "WindDir3pm"   
+    ## [11] "WindSpeed9am"  "WindSpeed3pm"  "Humidity9am"   "Humidity3pm"   "Pressure9am"   "Pressure3pm"   "Cloud9am"      "Cloud3pm"      "Temp9am"       "Temp3pm"      
     ## [21] "RainToday"     "RISK_MM"       "RainTomorrow"
 
 Convert data to the appropriate data type for each variable (e.g. Date
@@ -168,46 +147,22 @@ stats for the Date field.
     d_weather_date <- d_weather_remove %>% mutate(Date=as.Date(Date,format='%m/%d/%y'))
     summary(d_weather_date)
 
-    ##       Date               MinTemp          MaxTemp         Rainfall     
-    ##  Min.   :2007-11-01   Min.   :-5.300   Min.   : 7.60   Min.   : 0.000  
-    ##  1st Qu.:2008-01-31   1st Qu.: 2.300   1st Qu.:15.03   1st Qu.: 0.000  
-    ##  Median :2008-05-01   Median : 7.450   Median :19.65   Median : 0.000  
-    ##  Mean   :2008-05-01   Mean   : 7.266   Mean   :20.55   Mean   : 1.428  
-    ##  3rd Qu.:2008-07-31   3rd Qu.:12.500   3rd Qu.:25.50   3rd Qu.: 0.200  
-    ##  Max.   :2008-10-31   Max.   :20.900   Max.   :35.80   Max.   :39.800  
-    ##                                                                        
-    ##   Evaporation        Sunshine      WindGustDir        WindGustSpeed  
-    ##  Min.   : 0.200   Min.   : 0.000   Length:366         Min.   :13.00  
-    ##  1st Qu.: 2.200   1st Qu.: 5.950   Class :character   1st Qu.:31.00  
-    ##  Median : 4.200   Median : 8.600   Mode  :character   Median :39.00  
-    ##  Mean   : 4.522   Mean   : 7.909                      Mean   :39.84  
-    ##  3rd Qu.: 6.400   3rd Qu.:10.500                      3rd Qu.:46.00  
-    ##  Max.   :13.800   Max.   :13.600                      Max.   :98.00  
-    ##                   NA's   :3                           NA's   :2      
-    ##   WindDir9am         WindDir3pm         WindSpeed9am     WindSpeed3pm  
-    ##  Length:366         Length:366         Min.   : 0.000   Min.   : 0.00  
-    ##  Class :character   Class :character   1st Qu.: 6.000   1st Qu.:11.00  
-    ##  Mode  :character   Mode  :character   Median : 7.000   Median :17.00  
-    ##                                        Mean   : 9.652   Mean   :17.99  
-    ##                                        3rd Qu.:13.000   3rd Qu.:24.00  
-    ##                                        Max.   :41.000   Max.   :52.00  
-    ##                                        NA's   :7                       
-    ##   Humidity9am     Humidity3pm     Pressure9am      Pressure3pm    
-    ##  Min.   :36.00   Min.   :13.00   Min.   : 996.5   Min.   : 996.8  
-    ##  1st Qu.:64.00   1st Qu.:32.25   1st Qu.:1015.4   1st Qu.:1012.8  
-    ##  Median :72.00   Median :43.00   Median :1020.1   Median :1017.4  
-    ##  Mean   :72.04   Mean   :44.52   Mean   :1019.7   Mean   :1016.8  
-    ##  3rd Qu.:81.00   3rd Qu.:55.00   3rd Qu.:1024.5   3rd Qu.:1021.5  
-    ##  Max.   :99.00   Max.   :96.00   Max.   :1035.7   Max.   :1033.2  
-    ##                                                                   
-    ##     Cloud9am        Cloud3pm        Temp9am          Temp3pm     
-    ##  Min.   :0.000   Min.   :0.000   Min.   : 0.100   Min.   : 5.10  
-    ##  1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 7.625   1st Qu.:14.15  
-    ##  Median :3.500   Median :4.000   Median :12.550   Median :18.55  
-    ##  Mean   :3.891   Mean   :4.025   Mean   :12.358   Mean   :19.23  
-    ##  3rd Qu.:7.000   3rd Qu.:7.000   3rd Qu.:17.000   3rd Qu.:24.00  
-    ##  Max.   :8.000   Max.   :8.000   Max.   :24.700   Max.   :34.50  
-    ##                                                                  
+    ##       Date        MinTemp          MaxTemp         Rainfall       Evaporation        Sunshine      WindGustDir        WindGustSpeed    WindDir9am         WindDir3pm       
+    ##  Min.   :NA    Min.   :-5.300   Min.   : 7.60   Min.   : 0.000   Min.   : 0.200   Min.   : 0.000   Length:366         Min.   :13.00   Length:366         Length:366        
+    ##  1st Qu.:NA    1st Qu.: 2.300   1st Qu.:15.03   1st Qu.: 0.000   1st Qu.: 2.200   1st Qu.: 5.950   Class :character   1st Qu.:31.00   Class :character   Class :character  
+    ##  Median :NA    Median : 7.450   Median :19.65   Median : 0.000   Median : 4.200   Median : 8.600   Mode  :character   Median :39.00   Mode  :character   Mode  :character  
+    ##  Mean   :NA    Mean   : 7.266   Mean   :20.55   Mean   : 1.428   Mean   : 4.522   Mean   : 7.909                      Mean   :39.84                                        
+    ##  3rd Qu.:NA    3rd Qu.:12.500   3rd Qu.:25.50   3rd Qu.: 0.200   3rd Qu.: 6.400   3rd Qu.:10.500                      3rd Qu.:46.00                                        
+    ##  Max.   :NA    Max.   :20.900   Max.   :35.80   Max.   :39.800   Max.   :13.800   Max.   :13.600                      Max.   :98.00                                        
+    ##  NA's   :366                                                                      NA's   :3                           NA's   :2                                            
+    ##   WindSpeed9am     WindSpeed3pm    Humidity9am     Humidity3pm     Pressure9am      Pressure3pm        Cloud9am        Cloud3pm        Temp9am          Temp3pm     
+    ##  Min.   : 0.000   Min.   : 0.00   Min.   :36.00   Min.   :13.00   Min.   : 996.5   Min.   : 996.8   Min.   :0.000   Min.   :0.000   Min.   : 0.100   Min.   : 5.10  
+    ##  1st Qu.: 6.000   1st Qu.:11.00   1st Qu.:64.00   1st Qu.:32.25   1st Qu.:1015.4   1st Qu.:1012.8   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 7.625   1st Qu.:14.15  
+    ##  Median : 7.000   Median :17.00   Median :72.00   Median :43.00   Median :1020.1   Median :1017.4   Median :3.500   Median :4.000   Median :12.550   Median :18.55  
+    ##  Mean   : 9.652   Mean   :17.99   Mean   :72.04   Mean   :44.52   Mean   :1019.7   Mean   :1016.8   Mean   :3.891   Mean   :4.025   Mean   :12.358   Mean   :19.23  
+    ##  3rd Qu.:13.000   3rd Qu.:24.00   3rd Qu.:81.00   3rd Qu.:55.00   3rd Qu.:1024.5   3rd Qu.:1021.5   3rd Qu.:7.000   3rd Qu.:7.000   3rd Qu.:17.000   3rd Qu.:24.00  
+    ##  Max.   :41.000   Max.   :52.00   Max.   :99.00   Max.   :96.00   Max.   :1035.7   Max.   :1033.2   Max.   :8.000   Max.   :8.000   Max.   :24.700   Max.   :34.50  
+    ##  NA's   :7                                                                                                                                                          
     ##   RainToday            RISK_MM       RainTomorrow      
     ##  Length:366         Min.   : 0.000   Length:366        
     ##  Class :character   1st Qu.: 0.000   Class :character  
@@ -262,10 +217,10 @@ Often the best way to test if the model is functioning is to create what
 is called a Confusion Matrix. The following shows that we got 289 of the
 actual “No” rain days rignt (in that we also predicted a No). Likewise
 we got 41 “Yesses” right. This means that the model correctly classified
-90.2%.
+90%.
 
     d_weather_date$pred <- predict(decision_tree_model, type="class")
-    confusion_matrix <- d_weather_date %>% count(RainTomorrow,pred) %>% dcast(pred ~ RainTomorrow,value.var='n')
+    confusion_matrix <- d_weather_date %>% count(RainTomorrow,pred) %>% pivot_wider(names_from=RainTomorrow,values_from=n) # dcast(pred ~ RainTomorrow,value.var='n')
     confusion_matrix %>% knitr::kable('html',col.names=c('Prediction','Actual: No','Actual: Yes'))
 
 <table>
@@ -307,6 +262,7 @@ Yes
 </tr>
 </tbody>
 </table>
+
 ### Visualize the decision tree
 
 Depending on the type of decision tree model used, you can actually plot
@@ -317,8 +273,7 @@ have created.
 
 ![](README_files/figure-markdown_strict/plot_tree-1.png)
 
-To-do
-=====
+# To-do
 
 Log in to R Studio Cloud and click on Lab 6 in the workspace for this
 course. This will be setup as an assignment which will create a
