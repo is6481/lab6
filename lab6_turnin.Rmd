@@ -76,11 +76,6 @@ Answer the following regarding the chart below.
 * *What does the model predict if Sunshine = 7.3 and MinTemp = 15?*
 * *What does the model predict if Sunshine = 8, WindGust = E?*
 
-
-aa <- tibble(MinTemp=15,MaxTemp=24.3,Rainfall=0,Evaporation=3.4,Sunshine=6,WindGustDir=wg$WindGustDir,WindGustSpeed=30)
-predict(decision_tree_model,aa)
-
-
 ```{r plot_tree,echo=FALSE}
 prp(decision_tree_model, extra = 2) 
 ``` 
