@@ -6,7 +6,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,warning=FALSE)
 # options(width = 120)
 library(ggplot2)
 library(fpc)
@@ -17,9 +17,9 @@ library(rpart.plot)
 
 
 mm <- src_mysql(
-  host='is6481-classroom-spring22.cwcvuavxwtmk.us-east-1.rds.amazonaws.com',
+  host='is6481-classroom-data.crximyhxko7e.us-east-1.rds.amazonaws.com',
   port=3306,
-  user='student',
+  user='admin',
   password='test1234',
   dbname='supervised_learning'
 )
