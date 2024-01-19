@@ -17,7 +17,7 @@ library(rpart.plot)
 
 
 mm <- src_mysql(
-  host='is6481-fall23.cnuidkaopq2w.us-east-1.rds.amazonaws.com',
+  host='is-6481-spring-24.cdc8oawwsijq.us-east-1.rds.amazonaws.com',
   port=3306,
   user='admin',
   password='test1234',
